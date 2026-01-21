@@ -1,3 +1,7 @@
+.where('slug', router.matchers.slug())
+
+This is route-level validation
+It runs before the controller function executes.
 
 ---
 
