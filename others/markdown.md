@@ -244,3 +244,6 @@ Your system now behaves like:
 * **Static site generator**
 * **Markdown-based content engine**
 
+
+
+const title = markdownFormatter.title(md)
