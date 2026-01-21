@@ -37,3 +37,45 @@ npm run build
 
 7. # Restart Vite and Adonis servers
 npm run dev
+
+
+
+explain tailwind.config.js
+
+content: ['./resources/views/*/.edge', './resources/js/*/.js'],
+“Scan these files and folders to find Tailwind class names”
+
+theme: {
+  extend: {},
+},
+🔹 What this does
+This is where you customize Tailwind design.
+
+Add new colors
+
+Add custom fonts
+
+Add spacing, shadows, sizes
+
+🔹 Example (real use)
+theme: {
+  extend: {
+    colors: {
+      brand: '#2563eb',
+    },
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+    },
+  },
+
+
+
+  class="text-brand font-sans"
+
+
+plugins
+
+👉 We can add extra features to Tailwind only when we need them.
+
+
+
