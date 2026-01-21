@@ -1,6 +1,7 @@
 
 ---
-
+  @vite(['resources/js/app.js'])
+weneed to give this to every file
 ## 1️⃣ What is Vite?
 
 Vite is a **modern frontend build tool**.
