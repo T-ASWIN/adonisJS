@@ -161,3 +161,347 @@ Database
 
 build up and tear down system its also us to easily make changes
 
+
+5.
+---
+
+# ✅ 1️⃣ Migration Commands Explained
+
+---
+
+## 🔹 `migration:status`
+
+```bash
+node ace migration:status
+```
+
+Shows:
+
+* Which migrations have **run**
+* Which are still **pending**
+
+Output looks like:
+
+```
+✓ 169020101_users
+✗ 169020102_posts
+```
+
+👉 Great for debugging or CI pipelines.
+
+---
+
+## 🔹 `migration:run`
+
+```bash
+node ace migration:run
+```
+
+Runs **all pending migrations**.
+
+---
+
+## 🔹 `migration:rollback`
+
+```bash
+node ace migration:rollback
+```
+
+Rolls back the **last batch** of migrations.
+
+👉 A *batch* = group of migrations executed together.
+
+---
+
+### 🔥 Rollback a Specific Batch
+
+```bash
+node ace migration:rollback --batch=8
+```
+
+This undoes only migrations from batch 8.
+
+Useful when:
+
+* One deployment broke something
+* You want to revert only that release.
+
+---
+
+---
+
+## 🔹 `migration:refresh`
+
+```bash
+node ace migration:refresh
+```
+
+👉 Does:
+
+1. Rollback **all**
+2. Run everything again
+
+Used mostly in **development** when schema changed a lot.
+
+⚠️ **Deletes data** — never in production unless planned.
+
+---
+
+---
+
+## 🔹 `migration:reset`
+
+```bash
+node ace migration:reset
+```
+
+👉 Rolls back **everything**
+Does NOT re-run.
+
+Database becomes empty.
+
+---
+
+---
+
+# ✅ 2️⃣ Models in AdonisJS (Lucid ORM)
+
+Create model:
+
+```bash
+node ace make:model User
+```
+
+Creates:
+
+```
+app/Models/User.ts
+```
+
+Models represent **tables** and let you:
+
+* Query data
+* Define relations
+* Apply hooks
+
+---
+
+---
+
+# 🔹 `@column()` Decorator
+
+Used to map table columns to model properties.
+
+Example:
+
+```ts
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+
+export default class User extends BaseModel {
+  @column()
+  public email: string
+}
+```
+
+---
+
+---
+
+## 🔹 `isPrimary`
+
+Marks primary key.
+
+```ts
+@column({ isPrimary: true })
+public id: number
+```
+
+---
+
+---
+
+## 🔹 `autoCreate` & `autoUpdate`
+
+Used for timestamps.
+
+```ts
+@column.dateTime({ autoCreate: true })
+public createdAt: DateTime
+
+@column.dateTime({ autoCreate: true, autoUpdate: true })
+public updatedAt: DateTime
+```
+
+👉 Lucid will:
+
+* Set createdAt automatically on insert
+* Update updatedAt automatically on update.
+
+---
+
+---
+
+# ✅ 3️⃣ Nullable Columns → TypeScript Best Practice
+
+If DB column allows NULL:
+
+```ts
+table.string('avatar_url').nullable()
+```
+
+Then in model:
+
+```ts
+@column()
+public avatarUrl: string | null
+```
+
+🎯 **Why?**
+
+* Matches DB reality
+* Type-safe
+* Prevents runtime bugs
+* TypeScript forces null checks
+
+👉 YES — this is **best practice**.
+
+---
+
+---
+
+# ✅ 4️⃣ Table Names vs Model Names
+
+Convention:
+
+| DB Table   | Model    |
+| ---------- | -------- |
+| users      | User     |
+| blog_posts | BlogPost |
+
+Plural table, singular model.
+
+Lucid automatically maps:
+
+```
+User → users
+```
+
+You can override:
+
+```ts
+public static table = 'my_users'
+```
+
+---
+
+---
+
+# ✅ 5️⃣ Do We Need a Model for Every Table?
+
+👉 **No — not strictly.**
+
+You can:
+
+* Use Query Builder directly
+* Or access table via relationships from another model
+
+Example:
+
+You might not create `Role.ts` model if:
+
+* It's simple lookup data
+* Only accessed via joins
+
+But 💡 **best practice** in real projects:
+
+➡ Create models for tables that:
+
+* Have business logic
+* Are queried often
+* Have relationships
+* Use hooks
+
+---
+
+---
+
+# ✅ 6️⃣ Pivot Tables Explained (Many-to-Many)
+
+A **pivot table** connects two tables in a many-to-many relationship.
+
+Example:
+
+```
+users
+roles
+
+role_user   ← pivot
+```
+
+Pivot columns:
+
+```
+user_id
+role_id
+```
+
+---
+
+---
+
+## 🔹 Migration for Pivot Table
+
+```ts
+this.schema.createTable('role_user', (table) => {
+  table.increments('id')
+
+  table
+    .integer('user_id')
+    .unsigned()
+    .references('id')
+    .inTable('users')
+    .onDelete('CASCADE')
+
+  table
+    .integer('role_id')
+    .unsigned()
+    .references('id')
+    .inTable('roles')
+    .onDelete('CASCADE')
+
+  table.unique(['user_id', 'role_id'])
+})
+```
+
+---
+
+---
+
+## 🔹 Many-to-Many in Models
+
+### User model:
+
+```ts
+@manyToMany(() => Role)
+public roles: ManyToMany<typeof Role>
+```
+
+---
+
+### Role model:
+
+```ts
+@manyToMany(() => User)
+public users: ManyToMany<typeof User>
+```
+
+Lucid automatically uses:
+
+```
+role_user
+```
+
+unless specified.
+
+---
+
