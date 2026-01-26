@@ -251,3 +251,135 @@ router.get(
 
 ---
 
+---
+
+# 🧠 The Code
+
+```ts
+router
+  .group(() => {
+    router.get('/register', [RegisterController, 'show']).as('register.show')
+    router.post('/register', [RegisterController, 'store']).as('register.store')
+  })
+  .prefix('/auth')
+  .as('auth')
+```
+
+---
+
+# 📦 What is `router.group()`?
+
+### 👉 Groups multiple routes together.
+
+So instead of writing:
+
+```ts
+router.get('/auth/register', ...)
+router.post('/auth/register', ...)
+```
+
+You write `/register` inside group and apply `/auth` once.
+
+---
+
+---
+
+# 🧱 Inside the group
+
+```ts
+router.get('/register', ...)
+router.post('/register', ...)
+```
+
+These define two routes:
+
+| Method | Path      | Controller Method |
+| ------ | --------- | ----------------- |
+| GET    | /register | show              |
+| POST   | /register | store             |
+
+---
+
+---
+
+# 🔗 `.prefix('/auth')`
+
+This adds `/auth` before every route in the group.
+
+So final URLs become:
+
+```
+GET  /auth/register
+POST /auth/register
+```
+
+---
+
+---
+
+# 🏷 `.as('auth')` — route name prefix
+
+This prefixes the **route name**.
+
+Inside group:
+
+```
+register.show
+register.store
+```
+
+With `.as('auth')`:
+
+➡ full names become:
+
+```
+auth.register.show
+auth.register.store
+```
+
+---
+
+---
+
+# 🎯 Why name routes?
+
+So in views/controllers you can say:
+
+```blade
+<form action="{{ route('auth.register.store') }}" method="POST">
+```
+
+Instead of hardcoding:
+
+```
+/auth/register
+```
+
+Much safer.
+
+---
+
+---
+
+# 🧠 Syntax breakdown
+
+| Part                     | Meaning      |
+| ------------------------ | ------------ |
+| `router.group(() => {})` | group routes |
+| `router.get()`           | GET route    |
+| `router.post()`          | POST route   |
+| `.prefix()`              | URL prefix   |
+| `.as()`                  | name prefix  |
+
+---
+
+---
+
+# 📊 What this group creates
+
+| HTTP | URL            | Route name          |
+| ---- | -------------- | ------------------- |
+| GET  | /auth/register | auth.register.show  |
+| POST | /auth/register | auth.register.store |
+
+---
