@@ -34,3 +34,77 @@ html.attrs({
 })
 
 ```
+Almost 😄 — but this is an important correction, Aswin:
+
+> ❌ **We do NOT use `attrs()` to *get* data from user input.**
+> ✅ We use `attrs()` to **output data safely into HTML attributes**.
+
+Let me make it crystal clear.
+
+---
+
+# 🚫 What `attrs()` is NOT for
+
+It is **not** used to:
+
+* read form input
+* access query params
+* get request body
+* validate user data
+* sanitize incoming data
+
+Those jobs are done by:
+
+👉 `request.input()`
+👉 `request.qs()`
+👉 VineJS validators
+👉 controllers / middleware
+
+---
+
+# ✅ What `attrs()` IS for
+
+`html.attrs()` is a **view helper**.
+
+It helps:
+
+✔ render attributes dynamically
+✔ conditionally add classes
+✔ escape values to prevent XSS
+✔ keep templates clean
+
+---
+
+# 🧠 Simple Mental Model
+
+* **Controller** → reads user input
+* **Validator** → validates
+* **Service** → queries DB
+* **View (`attrs`)** → safely prints output
+
+Different layers. Different responsibilities.
+
+---
+
+# 📌 Example Comparison
+
+### Getting input (Controller):
+
+```ts
+const page = request.input('page')
+```
+
+### Rendering output (View):
+
+```edge
+<a {{ html.attrs({ href: item.url }) }}>Page</a>
+```
+
+---
+
+# 🎯 Interview Answer
+
+> `attrs()` is used in Edge views to safely render dynamic HTML attributes and conditional classes. It is not used to retrieve user input; input handling is done in controllers and validators.
+
+---
+
