@@ -1,0 +1,238 @@
+
+---
+
+# ✅ 1) Single Route
+
+A **single route** maps **one URL → one handler**.
+
+### 👉 Example:
+
+```ts
+import router from '@adonisjs/core/services/router'
+
+router.get('/hello', async () => {
+  return 'Hello World'
+})
+```
+
+### 🔍 Meaning:
+
+| Part     | What it does             |
+| -------- | ------------------------ |
+| `/hello` | URL path                 |
+| `get`    | HTTP method              |
+| function | runs when URL is visited |
+
+📍 If user goes to:
+
+```
+http://localhost:3333/hello
+```
+
+👉 They see: **Hello World**
+
+---
+
+---
+
+# ✅ 2) Resource Route
+
+A **resource route** auto-creates **CRUD routes** for you.
+
+CRUD = Create, Read, Update, Delete.
+
+### 👉 Example:
+
+```ts
+router.resource('posts', 'PostsController')
+```
+
+This single line creates 👇
+
+| URL             | Method    | Controller Method |
+| --------------- | --------- | ----------------- |
+| /posts          | GET       | index             |
+| /posts/:id      | GET       | show              |
+| /posts          | POST      | store             |
+| /posts/:id      | PUT/PATCH | update            |
+| /posts/:id      | DELETE    | destroy           |
+| /posts/create   | GET       | create            |
+| /posts/:id/edit | GET       | edit              |
+
+💡 So instead of writing 7 routes manually…
+**one resource does it all** 🚀
+
+---
+
+---
+
+# ✅ 3) Route Group
+
+A **group** lets you organize routes together.
+
+### 👉 Example:
+
+```ts
+router.group(() => {
+  router.get('/profile', 'UsersController.profile')
+  router.post('/logout', 'AuthController.logout')
+})
+```
+
+🧠 Why use groups?
+
+• To apply middleware to many routes
+• To add prefix
+• Cleaner code
+
+---
+
+---
+
+# ✅ 4) Prefix
+
+**Prefix** adds something in front of all URLs in the group.
+
+### 👉 Example:
+
+```ts
+router.group(() => {
+  router.get('/users', 'UsersController.index')
+  router.post('/users', 'UsersController.store')
+}).prefix('/admin')
+```
+
+### 📍 URLs become:
+
+```
+/admin/users
+/admin/users
+```
+
+---
+
+---
+
+# ✅ 5) `as` (Route Name)
+
+`as` gives a **name** to a route.
+
+Useful when generating URLs inside views or redirects.
+
+### 👉 Example:
+
+```ts
+router.get('/login', 'AuthController.login').as('login')
+```
+
+Now its name is:
+
+```
+login
+```
+
+You can later refer to it by name instead of URL.
+
+---
+
+### 👉 In group:
+
+```ts
+router.group(() => {
+  router.get('/dashboard', 'DashboardController.index').as('dashboard')
+}).as('admin')
+```
+
+Named route becomes:
+
+```
+admin.dashboard
+```
+
+---
+
+---
+
+# ✅ 6) Middleware
+
+**Middleware = security guard 🛡️**
+
+It runs **before** the request reaches the controller.
+
+Used for:
+
+✔ auth check
+✔ role check
+✔ logging
+✔ rate limit
+
+---
+
+### 👉 Single route middleware:
+
+```ts
+router.get('/dashboard', 'DashboardController.index')
+  .middleware(['auth'])
+```
+
+---
+
+---
+
+### 👉 Group middleware:
+
+```ts
+router.group(() => {
+  router.get('/dashboard', 'DashboardController.index')
+  router.get('/settings', 'SettingsController.index')
+}).middleware(['auth'])
+```
+
+Now both routes require login 🔐
+
+---
+
+---
+
+# ✅ Combine EVERYTHING (Group + Prefix + Middleware + as)
+
+🔥 Real-world style:
+
+```ts
+router.group(() => {
+  router.get('/dashboard', 'DashboardController.index').as('dashboard')
+  router.get('/users', 'UsersController.index').as('users')
+})
+  .prefix('/admin')
+  .middleware(['auth'])
+  .as('admin')
+```
+
+---
+
+### 📍 What happens?
+
+| Feature    | Result             |
+| ---------- | ------------------ |
+| Prefix     | `/admin/dashboard` |
+| Middleware | must login         |
+| Route name | `admin.dashboard`  |
+| Route name | `admin.users`      |
+
+---
+
+---
+
+# 🧠 Simple Summary
+
+| Feature      | Purpose                |
+| ------------ | ---------------------- |
+| Single route | One URL → one function |
+| resource     | CRUD routes auto       |
+| group        | organize routes        |
+| prefix       | add common URL         |
+| as           | name route             |
+| middleware   | protect route          |
+
+---
+
