@@ -235,4 +235,153 @@ router.group(() => {
 | middleware   | protect route          |
 
 ---
+Great question, Aswin 👍 — this is *fundamental* in backend development.
+
+In AdonisJS (and most web frameworks), **GET** and **POST** are HTTP methods.
+They tell the server **what kind of action** the client is trying to do.
+
+Think like this:
+
+> 📥 **GET = ask for data**
+> 📤 **POST = send data**
+
+Let’s go slow and simple 👇
+
+---
+
+# ✅ When to Use `GET`
+
+Use **GET** when:
+
+✔ You are **fetching / viewing** something
+✔ No data is being changed in the database
+✔ Opening a page
+✔ Loading a list or details
+
+---
+
+### 👉 Example:
+
+```ts
+router.get('/users', 'UsersController.index')
+```
+
+👆 This means:
+
+> “When someone visits `/users`, show them the users list.”
+
+---
+
+### 📍 Another example:
+
+```ts
+router.get('/profile', 'ProfileController.show')
+```
+
+Used to:
+
+• open profile page
+• show user info
+
+---
+
+---
+
+# ✅ When to Use `POST`
+
+Use **POST** when:
+
+✔ User submits a form
+✔ Data is being **created**
+✔ Something is saved in DB
+✔ Login / Register
+✔ Upload file
+
+---
+
+### 👉 Example:
+
+```ts
+router.post('/register', 'AuthController.store')
+```
+
+👆 This means:
+
+> “User sends registration data → save it.”
+
+---
+
+---
+
+# 🧠 Super Simple Comparison
+
+| Method | What it does  | Changes data? |
+| ------ | ------------- | ------------- |
+| GET    | Read / fetch  | ❌ No          |
+| POST   | Send / create | ✅ Yes         |
+
+---
+
+---
+
+# 🔥 Real-World Website Flow
+
+### 📝 Registration Page:
+
+1️⃣ User opens page → GET
+
+```ts
+router.get('/register', 'AuthController.showRegister')
+```
+
+2️⃣ User submits form → POST
+
+```ts
+router.post('/register', 'AuthController.register')
+```
+
+---
+
+---
+
+# 📌 Another Example: Blog
+
+### Show posts:
+
+```ts
+router.get('/posts', 'PostsController.index')
+```
+
+### Create post:
+
+```ts
+router.post('/posts', 'PostsController.store')
+```
+
+---
+
+---
+
+# 🛑 Important Rule (Interview Tip 💡)
+
+👉 **GET should NOT change anything in DB**
+👉 **POST is for creating data**
+
+Interview-style answer:
+
+> GET is used to retrieve data from the server, while POST is used to send data to the server to create or modify records.
+
+---
+
+---
+
+# ⚡ Quick Mental Trick
+
+Ask yourself:
+
+🧠 “Is the user *asking* for something?” → GET
+🧠 “Is the user *sending* something to be saved?” → POST
+
+---
+
 
