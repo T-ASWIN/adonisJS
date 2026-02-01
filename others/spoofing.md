@@ -1,97 +1,142 @@
+Nice 😄 — **method spoofing** is one of those backend concepts that sounds scary… but is actually very simple.
+
+You already *used* it in your movie form without realizing 👀
+
+Let’s break it down clearly 👇
 
 ---
 
-# 🧠 What is Method Spoofing?
+# ✅ What Is Method Spoofing?
 
-Method spoofing =
+Method spoofing means:
 
-> Send a POST request, but **tell the server** to treat it as DELETE / PUT / PATCH.
-
-This is done by adding:
-
-* `_method=DELETE` in query string **or**
-* hidden input field
-
-Adonis middleware sees `_method` and overrides the request method.
+> 👉 sending a request that *pretends* to be PUT / PATCH / DELETE even though the browser only supports GET and POST in HTML forms.
 
 ---
 
+# 🧠 Why Do We Need It?
+
+HTML forms only support:
+
+• GET
+• POST
+
+But REST APIs often want:
+
+• PUT → update
+• DELETE → remove
+• PATCH → partial update
+
+So frameworks like Adonis allow:
+
+👉 POST + hidden field = treated as PUT/DELETE.
+
+That trick = **method spoofing**.
+
 ---
 
-# ✅ Your example explained
+# 🔥 How You Already Used It (In Your Code)
 
-You wrote:
+You had:
 
 ```edge
-<form 
-  action="{{ route('redis.flush', {}, { qs: { _method: 'DELETE' } }) }}"
-  method="POST"
->
+@assign(action = route(
+  'admin.movies.update',
+  { id: movie.id },
+  { qs: { _method: 'PUT' } }
+))
 ```
 
-That produces:
+That creates a URL like:
 
 ```
-/redis/flush?_method=DELETE
+/admin/movies/10?_method=PUT
 ```
 
-Browser sends POST → Adonis reads `_method=DELETE` → treats as DELETE.
-
-Perfect 👌
+Browser sends POST, but Adonis reads `_method=PUT` and handles it as a PUT request.
 
 ---
 
 ---
 
-# 🧩 Another (cleaner) way — hidden input
+# ✅ Standard Hidden-Input Version
 
-Instead of query string:
+Most common style:
 
 ```edge
-<form action="{{ route('redis.flush') }}" method="POST">
+<form method="POST" action="/movies/10">
   {{ csrfField() }}
-  <input type="hidden" name="_method" value="DELETE" />
 
-  @button({ type: 'submit' })
-    Flush Redis Db
-  @end
+  <input type="hidden" name="_method" value="PUT">
+
+  <button type="submit">Update</button>
 </form>
 ```
 
-This is actually more common.
+Even though method is POST, Adonis treats it as PUT.
 
 ---
 
 ---
 
-# 🧠 Why we need spoofing
+# ⚙️ How Adonis Handles This
 
-Because HTML spec:
+Adonis has middleware that:
 
-❌ `<form method="DELETE">` → invalid
-❌ `<form method="PATCH">` → invalid
+• checks request body or query string
+• looks for `_method`
+• if found → overrides HTTP method
 
-Only GET/POST allowed.
+So controller route:
 
----
+```ts
+router.put('/movies/:id', 'MoviesController.update')
+```
 
----
-
-# 📊 Summary
-
-| Thing            | Meaning                                        |
-| ---------------- | ---------------------------------------------- |
-| Method spoofing  | Override HTTP method                           |
-| `_method=DELETE` | Tell server to treat POST as DELETE            |
-| Used for         | REST routes                                    |
-| Handled by       | Adonis bodyparser / method override middleware |
+will match 👍
 
 ---
 
 ---
 
-# 🔥 One-liner
+# 🧠 Simple Definition
 
-> **We POST from browser, but spoof DELETE so backend follows REST rules.**
+> Method spoofing allows HTML forms to simulate HTTP methods like PUT or DELETE by sending a POST request with a special `_method` value.
 
 ---
+
+---
+
+# 📌 When Do You Use It?
+
+Use it when:
+
+✔ submitting edit forms
+✔ deleting records
+✔ RESTful routes
+✔ resource controllers
+
+---
+
+---
+
+# 🎯 Interview One-Liner
+
+If asked:
+
+> What is method spoofing?
+
+Say:
+
+> Method spoofing is a technique where a POST form includes a hidden `_method` field so the server treats it as PUT, PATCH, or DELETE.
+
+---
+
+If you want next 😄:
+
+👉 how method spoofing interacts with CSRF
+👉 `_method` in query vs body
+👉 resource routes example
+👉 delete button example
+
+Just tell me 👍
